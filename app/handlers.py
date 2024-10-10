@@ -23,6 +23,7 @@ class Reg(StatesGroup):
     appointment = State()
     selected_day = State()
     selected_time = State()
+    count_of_analyses = State()
 
 
 @router.message(CommandStart())
@@ -124,19 +125,35 @@ async def order(callback: CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(F.data == 'Приступить к оплате')
-async def start_payment(callback: CallbackQuery, bot: Bot):
-    await bot.send_invoice(
-        chat_id=callback.message.chat.id,
-        title='Консультация',
-        description='Консультация у Левченко Е.А.',
-        payload=f'Видео-консультация',
-        provider_token=YOOTOKEN,
-        currency='RUB',
-        prices=[LabeledPrice(
-            label='Цена',
-            amount=10000
-        )]
-    )
+async def start_payment(callback: CallbackQuery, bot: Bot, state: FSMContext):
+    data = await state.get_data()
+    data = data['consult_type']
+    if data == 'Расшифровка анализов':
+        await bot.send_invoice(
+            chat_id=callback.message.chat.id,
+            title='Расшифровка анализов',
+            description='Расшифровка анализов с Левченко Е.А.',
+            payload=f'Видео-консультация',
+            provider_token=YOOTOKEN,
+            currency='RUB',
+            prices=[LabeledPrice(
+                label='Цена',
+                amount=30000
+            )]
+        )
+    else:
+        await bot.send_invoice(
+            chat_id=callback.message.chat.id,
+            title='Консультация',
+            description='Консультация у Левченко Е.А.',
+            payload=f'Видео-консультация',
+            provider_token=YOOTOKEN,
+            currency='RUB',
+            prices=[LabeledPrice(
+                label='Цена',
+                amount=10000
+            )]
+        )
 
 
 @router.pre_checkout_query()
@@ -158,6 +175,7 @@ async def successful_payment(message: Message, state: FSMContext, bot: Bot):
         await message.answer_document(FSInputFile('docs/Anketa'))
         await bot.send_message(ADMIN_ID,
                                f'Муська, к тебе записались на {data['consult_type']}!\nПациент - {data['name']}, на {wickday}, {time}\nТы можешь посмотреть подробную информацию у себя в админ панели выбрав день и время записи.')
+        await state.clear()
         return await message.answer(msg)
 
     elif payload_info == 'Лайт':
@@ -165,4 +183,6 @@ async def successful_payment(message: Message, state: FSMContext, bot: Bot):
         msg = 'Спасибо за оплату! В течении дня Екатерина Андреевна свяжется с вами для обсуждения деталей!'
         msg_to_admin = f'Муська, к тебе записались на Сопровождение "Лайт"\n{data['name']}'
         await bot.send_message(ADMIN_ID, msg_to_admin)
+        await state.clear()
         return await message.answer(msg)
+

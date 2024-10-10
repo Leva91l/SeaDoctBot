@@ -7,7 +7,7 @@ type_consult = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text='Очный прием'), KeyboardButton(text='Видео-консультация')],
         [KeyboardButton(text='Сопровождение "Лайт"'), KeyboardButton(text='Сопровождение "Оптимальный"')],
-        [KeyboardButton(text='Сопровождение "Макси"'), KeyboardButton(text='Расшифровка анализов')],
+            [KeyboardButton(text='Сопровождение "Макси"'), KeyboardButton(text='Расшифровка анализов')],
     ],
     resize_keyboard=True,
     input_field_placeholder='↓Выберите из пунктов ниже↓'
@@ -94,3 +94,10 @@ maintenance_light_keyboard = ReplyKeyboardMarkup(
     input_field_placeholder='↓Выберите из пунктов ниже↓'
 )
 
+qa_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text='Меньше 5'), KeyboardButton(text='Больше 5')]
+    ],
+    resize_keyboard=True,
+    input_field_placeholder='↓Выберите из пунктов ниже↓'
+)
