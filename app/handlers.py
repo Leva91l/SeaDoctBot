@@ -7,6 +7,7 @@ from aiogram.types import Message, FSInputFile, CallbackQuery, LabeledPrice, Pre
 
 from app.keyboards import type_consult, first_or_second, accept_agreement, get_all_days, order_keyboard, get_all_times, \
     maintenance_keyboard
+from app.light_handlers import light_router
 from config import HELLO_MESSAGE, YOOTOKEN, ADMIN_ID
 from database.requests import what_a_day, what_a_time, new_user
 from long_answers import reception_info
@@ -41,6 +42,7 @@ async def reception(message: Message, state: FSMContext):
     await state.set_state(None)
 
 
+@light_router.message(F.text == 'Записаться на видео-консультацию')
 @router.message(F.text == 'Видео-консультация')
 @router.message(F.text == Reg.consult_type)
 async def video_consultation(message: Message, state: FSMContext):
@@ -122,12 +124,12 @@ async def order(callback: CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(F.data == 'Приступить к оплате')
-async def start_payment(callback: CallbackQuery, bot: Bot, ):
+async def start_payment(callback: CallbackQuery, bot: Bot):
     await bot.send_invoice(
         chat_id=callback.message.chat.id,
         title='Консультация',
         description='Консультация у Левченко Е.А.',
-        payload=f'Платеж за консультацию',
+        payload=f'Видео-консультация',
         provider_token=YOOTOKEN,
         currency='RUB',
         prices=[LabeledPrice(
@@ -144,14 +146,23 @@ async def pre_checkout_query(pre_check: PreCheckoutQuery, bot: Bot):
 
 @router.message(F.content_type == ContentType.SUCCESSFUL_PAYMENT)
 async def successful_payment(message: Message, state: FSMContext, bot: Bot):
+    payload_info = message.successful_payment.invoice_payload
     data = await state.get_data()
-    print(data)
-    wickday = await what_a_day(data['selected_day'])
-    time = await what_a_time(data['selected_time'])
-    msg = f'Спасибо за оплату!\n{data['name']}, Вы записались на консультацию к Левченко Е.А. на {wickday} в {time}.'
-    await new_user(name=data['name'], date_of_birth=data['birthday'], phone=data['phone'], tg_id=message.chat.id,
-                   wickday_id=data['selected_day'], time_id=data['selected_time'], consult_type=data['consult_type'])
-    await message.answer_document(FSInputFile('docs/Anketa'))
-    await bot.send_message(ADMIN_ID,
-                           f'Муська, к тебе записались на {data['consult_type']}!\nПациент - {data['name']}, на {wickday}, {time}\nТы можешь посмотреть подробную информацию у себя в админ панели выбрав день и время записи.')
-    return await message.answer(msg)
+    if payload_info == 'Видео-консультация':
+        wickday = await what_a_day(data['selected_day'])
+        time = await what_a_time(data['selected_time'])
+        msg = f'Спасибо за оплату!\n{data['name']}, Вы записались на консультацию к Левченко Е.А. на {wickday} в {time}.'
+        await new_user(name=data['name'], date_of_birth=data['birthday'], phone=data['phone'], tg_id=message.chat.id,
+                       wickday_id=data['selected_day'], time_id=data['selected_time'],
+                       consult_type=data['consult_type'])
+        await message.answer_document(FSInputFile('docs/Anketa'))
+        await bot.send_message(ADMIN_ID,
+                               f'Муська, к тебе записались на {data['consult_type']}!\nПациент - {data['name']}, на {wickday}, {time}\nТы можешь посмотреть подробную информацию у себя в админ панели выбрав день и время записи.')
+        return await message.answer(msg)
+
+    elif payload_info == 'Лайт':
+        data = await state.get_data()
+        msg = 'Спасибо за оплату! В течении дня Екатерина Андреевна свяжется с вами для обсуждения деталей!'
+        msg_to_admin = f'Муська, к тебе записались на Сопровождение "Лайт"\n{data['name']}'
+        await bot.send_message(ADMIN_ID, msg_to_admin)
+        return await message.answer(msg)

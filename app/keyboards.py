@@ -61,6 +61,14 @@ order_keyboard = InlineKeyboardMarkup(
     ]
 )
 
+order_keyboard_light = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text='Оплатить', callback_data='Оплатить')]
+    ],
+    resize_keyboard=True,
+)
+
+
 observation_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text='Да'), KeyboardButton(text='Нет')]
@@ -76,3 +84,13 @@ maintenance_keyboard = ReplyKeyboardMarkup(
     resize_keyboard=True,
     input_field_placeholder='↓Выберите из пунктов ниже↓'
 )
+
+maintenance_light_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text='Была видео-консультация'), KeyboardButton(text='Наблюдаюсь в клинике')],
+        [KeyboardButton(text='Записаться на прием в клинику'), KeyboardButton(text='Записаться на видео-консультацию')]
+    ],
+    resize_keyboard=True,
+    input_field_placeholder='↓Выберите из пунктов ниже↓'
+)
+
