@@ -43,7 +43,7 @@ async def reception(message: Message, state: FSMContext):
     await state.set_state(None)
 
 
-@light_router.message(F.text == 'Записаться на видео-консультацию')
+@light_router.message(F.text == 'Запись на видео-консультацию')
 @router.message(F.text == 'Видео-консультация')
 @router.message(F.text == Reg.consult_type)
 async def video_consultation(message: Message, state: FSMContext):

@@ -88,7 +88,7 @@ maintenance_keyboard = ReplyKeyboardMarkup(
 maintenance_light_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text='Была видео-консультация'), KeyboardButton(text='Наблюдаюсь в клинике')],
-        [KeyboardButton(text='Записаться на прием в клинику'), KeyboardButton(text='Записаться на видео-консультацию')]
+        [KeyboardButton(text='Запись на прием в клинику'), KeyboardButton(text='Запись на видео-консультацию')]
     ],
     resize_keyboard=True,
     input_field_placeholder='↓Выберите из пунктов ниже↓'

@@ -5,7 +5,7 @@ from database.models import *
 
 async def get_days():
     async with async_session() as session:
-        days = await session.scalars(select(Wickdays))
+        days = await session.scalars(select(Wickdays).filter(Wickdays.status == True))
         return days
 
 
@@ -41,3 +41,6 @@ async def new_user(name, date_of_birth, tg_id, phone, wickday_id, time_id, consu
                   time_id=time_id, consult_type=consult_type)
         )
         await session.commit()
+
+
+

@@ -21,7 +21,7 @@ async def maintanance_light(message: Message):
     await message.answer(maintanance_light_answer, reply_markup=maintenance_light_keyboard)
 
 
-@light_router.message(F.text == 'Записаться на прием в клинику')
+@light_router.message(F.text == 'Запись на прием в клинику')
 async def make_an_appointment(message: Message):
     await message.answer(reception_info)
 

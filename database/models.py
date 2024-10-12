@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase
 
@@ -15,6 +15,7 @@ class Wickdays(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     wickday = Column(String, unique=True)
     date = Column(String)
+    status = Column(Boolean, default=True)
 
 
 class Time(Base):
